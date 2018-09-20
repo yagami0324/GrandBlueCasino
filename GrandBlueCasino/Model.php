@@ -7,6 +7,7 @@ class PokerModel
   private $pokerHandProperty = []; //上がり役の基本情報(役の名前、得点倍率)
 
   private $num_joker = 0; //手札に存在するジョーカーの枚数
+  private $array_SameRank = []; //手札にある同じ数字の組の配列
   private $flg_flush = FALSE; //手札がフラッシュかどうかの判定フラグ
   private $flg_straight = FALSE;  //手札がストレートかどうかの判定フラグ
 
@@ -193,22 +194,22 @@ class PokerModel
   }
 
   //重複しているカードを数える
-  //返り値はそれぞれの数値の重複枚数の配列 例：[3,1,1]
-  public function countSameRank(){
+  //返り値はそれぞれの数字の重複枚数の配列 例：[3,1,1]
+  public function setArraySameRank(){
+
+    $this->array_SameRank = [];
 
     //カードの数値のみを抽出する
     $array_num = [];
     $array_num = $this->createArrayNumbers();
-
-    $return_pairs=[]; //返り値用の配列
 
     //ジョーカー処理部分
     //ジョーカーの枚数が4枚以上の時はファイブカードと判定して終了する
     //1～3枚の場合はジョーカーを一番枚数が多いカードのコピーにする
     if ($this->num_joker>=4) {
 
-      $return_pairs=[5];
-      return $return_pairs;
+      $this->array_SameRank=[5];
+      return $this->array_SameRank;
 
     } elseif ( (1<=$this->num_joker) && ($this->num_joker<=4) ) {
       
@@ -228,14 +229,14 @@ class PokerModel
     }
 
     //ジョーカー変換後の数値群に対し、それぞれ何枚重複しているかを数える
+    $array_pairs = [];
     $array_pairs = array_count_values($array_num);
     foreach ($array_pairs as $rank => $pair) {
-      array_push( $return_pairs , $pair );
+      array_push( $this->array_SameRank , $pair );
     }
-    rsort($return_pairs);
-
-    //それぞれ何枚ずつかの配列を降順に返す
-    return $return_pairs;
+    //それぞれ何枚ずつかの配列を降順に並べて完成
+    rsort($this->array_SameRank);
+    return $this->array_SameRank;
 
   }
 

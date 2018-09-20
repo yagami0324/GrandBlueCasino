@@ -13,16 +13,13 @@ $pokermodel->viewHand();
 
 echo '================'.PHP_EOL;
 echo 'デバッグ用手札'.PHP_EOL;
-$pokermodel->setDebugHand( [53,53,53,2,1] );
+$pokermodel->setDebugHand( [53,5,53,2,1] );
 $pokermodel->viewHand();
 
 $a_joker = $pokermodel->setNumJoker();
-$b_flush = $pokermodel->setFlgFlush();
-$c_straight = $pokermodel->setFlgStraight();
-$d_royal = $pokermodel->is_RoyalStraightFlush();
+$b_sameRank = $pokermodel->setArraySameRank();
+$c_flush = $pokermodel->setFlgFlush();
+$d_straight = $pokermodel->setFlgStraight();
+$e_royal = $pokermodel->is_RoyalStraightFlush();
 echo 'end';
 
-//次はcountSameRankをリファクタリング
-//setArraySameRank
-
-//その後にファイブカードか？
