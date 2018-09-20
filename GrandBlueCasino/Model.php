@@ -11,6 +11,8 @@ class PokerModel
   private $flg_flush = FALSE; //手札がフラッシュかどうかの判定フラグ
   private $flg_straight = FALSE;  //手札がストレートかどうかの判定フラグ
 
+  private $pokerHand = 0; //手札で成立している役を保持する変数
+
   function __construct() {
     
     //カードの数字部分
@@ -165,6 +167,34 @@ class PokerModel
     }
   }
 
+  //手札で成立している役を判定する
+  public function checkPokerHand() {
+
+    //役の判定を行う前に複数回参照するものを予め実施して記録しておく
+    $this->setNumJoker();      //ジョーカーの枚数
+    $this->setArraySameRank(); //手札にある同じ数字の組の配列
+    $this->setFlgFlush();      //フラッシュが成立しているか
+    $this->setFlgStraight();   //ストレートが成立しているか
+
+    //高い役から順番に判定し、成立していたらその時点で終了する
+    $this->pokerHand=0;
+    if ( $this->is_RoyalStraightFlush() === TRUE ) {$this->pokerHand=1;  return $this->pokerHand;} 
+    if ( $this->is_FiveCard() === TRUE ) {$this->pokerHand=2;  return $this->pokerHand;} 
+    if ( $this->is_StraightFlush() === TRUE ) {$this->pokerHand=3;  return $this->pokerHand;} 
+    if ( $this->is_FourOfAKind() === TRUE ) {$this->pokerHand=4;  return $this->pokerHand;} 
+    if ( $this->is_FullHouse() === TRUE ) {$this->pokerHand=5;  return $this->pokerHand;} 
+    if ( $this->is_Flush() === TRUE ) {$this->pokerHand=6;  return $this->pokerHand;} 
+    if ( $this->is_Straight() === TRUE ) {$this->pokerHand=7;  return $this->pokerHand;} 
+    if ( $this->is_ThreeOfAKind() === TRUE ) {$this->pokerHand=8;  return $this->pokerHand;} 
+    if ( $this->is_TwoPair() === TRUE ) {$this->pokerHand=9;  return $this->pokerHand;} 
+    if ( $this->is_OnePair() === TRUE ) {$this->pokerHand=10;  return $this->pokerHand;} 
+    
+    //どの役も成立しなかった場合はノーペア
+    $this->pokerHand=0;
+    return $this->pokerHand;
+
+  }
+
   //手札の数値部分のみ(ジョーカーは除く)を抽出した配列を作成する
   public function createArrayNumbers(){
     
@@ -194,7 +224,7 @@ class PokerModel
   }
 
   //重複しているカードを数える
-  //返り値はそれぞれの数字の重複枚数の配列 例：[3,1,1]
+  //返り値はそれぞれの数字の重複枚数の配列 例：[3,1,1,0,0]
   public function setArraySameRank(){
 
     $this->array_SameRank = [];
@@ -208,7 +238,7 @@ class PokerModel
     //1～3枚の場合はジョーカーを一番枚数が多いカードのコピーにする
     if ($this->num_joker>=4) {
 
-      $this->array_SameRank=[5];
+      $this->array_SameRank=[5,0,0,0,0];
       return $this->array_SameRank;
 
     } elseif ( (1<=$this->num_joker) && ($this->num_joker<=4) ) {
@@ -234,8 +264,14 @@ class PokerModel
     foreach ($array_pairs as $rank => $pair) {
       array_push( $this->array_SameRank , $pair );
     }
-    //それぞれ何枚ずつかの配列を降順に並べて完成
+    //それぞれ何枚ずつかの配列を降順に並べる
     rsort($this->array_SameRank);
+
+    //5組になるまで残りの項目を0枚で満たして完成
+    for ($i=count($this->array_SameRank); $i<5  ; $i++) { 
+      array_push($this->array_SameRank,0);
+    }
+
     return $this->array_SameRank;
 
   }
@@ -343,6 +379,106 @@ class PokerModel
 
   } 
 
+  //ファイブカードを判定する
+  public function is_FiveCard() {
+
+    //一番多いカードの枚数が5枚以上ならファイブカード成立
+    if ( $this->array_SameRank[0] >= 5 ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+
+  //ストレートフラッシュを判定する
+  public function is_StraightFlush() {
+
+    //フラッシュかつストレートならストレートフラッシュ成立
+    if ( ($this->flg_flush === TRUE) && ($this->flg_straight === TRUE) ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+
+  //フォーカードを判定する
+  public function is_FourOfAKind() {
+
+    //一番多いカードの枚数が4枚以上ならフォーカード成立
+    if ( $this->array_SameRank[0] >= 4 ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+
+  //フルハウスを判定する
+  public function is_FullHouse() {
+
+    //一番多いカードの枚数が3枚以上かつ
+    //二番目に多いカードが2枚以上ならフルハウス成立
+    if ( ($this->array_SameRank[0] >= 3) && ($this->array_SameRank[1] >= 2) ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }  
+
+  //フラッシュを判定する
+  public function is_Flush() {
+
+    if ($this->flg_flush === TRUE) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+  
+  //ストレートを判定する
+  public function is_Straight() {
+
+    if ($this->flg_straight === TRUE) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }  
+
+  //スリーカードを判定する
+  public function is_ThreeOfAKind() {
+
+    //一番多いカードの枚数が3枚以上ならスリーカード成立
+    if ( $this->array_SameRank[0] >= 3 ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+
+  //ツーペアを判定する
+  public function is_TwoPair() {
+ 
+    //一番多いカードの枚数が2枚以上かつ
+    //二番目に多いカードが2枚以上ならツーペア成立
+    if ( ($this->array_SameRank[0] >= 2) && ($this->array_SameRank[1] >= 2) ) {
+      return TRUE;
+    }
+    return FALSE;
+   
+
+  }
+
+  //ワンペアを判定する
+  public function is_OnePair() {
+
+    //一番多いカードの枚数が2枚以上ならワンペア成立
+    if ( $this->array_SameRank[0] >= 2 ) {
+      return TRUE;
+    }
+    return FALSE;
+
+  }
+  
   //デバッグ用関数 指定の手札に変更
   public function setDebugHand(array $newHand ){
     $this->hand=[];
@@ -361,6 +497,18 @@ class PokerModel
       echo $this->cardProperty[$num]['index']." ";
     }
     echo PHP_EOL;
+  }
+
+  //手札で成立している役の名前(日本語)を表示する
+  public function viewPokerHandNameJa() {
+    $num=$this->pokerHand;
+    echo $this->pokerHandProperty[$num]['name_ja'].PHP_EOL;
+  }
+  
+  //手札で成立している役の名前(英語)を表示する
+  public function viewPokerHandNameEn() {
+    $num=$this->pokerHand;
+    echo $this->pokerHandProperty[$num]['name_en'].PHP_EOL;
   }
 
 }
