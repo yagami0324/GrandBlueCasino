@@ -13,67 +13,34 @@ class PokerModel
 
   private $pokerHand = 0; //手札で成立している役を保持する変数
 
+  //カードの基本情報作成用
+  const RANK_NAME = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const SUIT_NAME = ['spade', 'heart', 'diamond', 'club'];
+  const SUIT_MARK = ['♠', '♡', '♢', '♣'];
+
   function __construct() {
     
-    //カードの数字部分
-    $index_rank = ['0','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-
-    //スペード部分を指定
-    $n=0;
-    $suit = 'spade';
-    $index_suit = '♠';
-    for ($i=1; $i <= 13 ; $i++) { 
-      $this->cardProperty[$n*13+$i] = 
-      array(
-        'suit' => $suit,
-        'rank' => $i,
-        'index' => $index_rank[$i].$index_suit
-      );
+    
+    //カードの基本情報(cardProperty)を作成
+    $i=1; //i枚目のカード
+    foreach (self::SUIT_NAME as $suit_no =>  $suit_name) {
+        foreach (self::RANK_NAME as $rank_no => $rank_name) {
+          $this->cardProperty[$i] = 
+          array(
+            'suit' => $suit_name,
+            'rank' => $rank_no + 1,
+            'index' => $rank_name.self::SUIT_MARK[$suit_no]
+          );
+          $i++;
+        }
     }
-    //ハート部分を指定
-    $n=1;
-    $suit = 'heart';
-    $index_suit = '♡';
-    for ($i=1; $i <= 13 ; $i++) { 
-      $this->cardProperty[$n*13+$i] = 
-      array(
-        'suit' => $suit,
-        'rank' => $i,
-        'index' => $index_rank[$i].$index_suit
-      );
-    }
-    //ダイヤ部分を指定
-    $n=2;
-    $suit = 'diamond';
-    $index_suit = '♢';
-    for ($i=1; $i <= 13 ; $i++) { 
-      $this->cardProperty[$n*13+$i] = 
-      array(
-        'suit' => $suit,
-        'rank' => $i,
-        'index' => $index_rank[$i].$index_suit
-      );
-    }
-    //クローバー部分を指定
-    $n=3;
-    $suit = 'club';
-    $index_suit = '♣';
-    for ($i=1; $i <= 13 ; $i++) { 
-      $this->cardProperty[$n*13+$i] = 
-      array(
-        'suit' => $suit,
-        'rank' => $i,
-        'index' => $index_rank[$i].$index_suit
-      );
-    }
-    //ジョーカーを指定
-    $this->cardProperty[53] = 
+    //53枚目以降にジョーカーを追加
+    $this->cardProperty[$i] = 
     array(
       'suit' => 'joker',
       'rank' => 'joker',
       'index' => 'JK'
     );
-
 
 
     $this->pokerHandProperty= array(
