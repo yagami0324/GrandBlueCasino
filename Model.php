@@ -286,36 +286,38 @@ class PokerModel
     $array_num = [];
     $array_num = $this->createArrayNumbers();
 
-    //ジョーカーの枚数が4枚以上ならストレート成立確定
-    //3枚以下なら2ステップで判定する
+
+    //ジョーカーが3枚以下なら2ステップで判定する
     //STEP1 数値が全てユニーク
     //STEP2 最大値と最小値の差が4以下
+
+    //ジョーカーの枚数が4枚以上ならストレート成立確定
     if ($this->num_joker>=4) {
       $this->flg_straight=TRUE;
       return TRUE;
-    } else {
-        //ジョーカーが3枚以下の場合
-        if( count($array_num) === count(array_unique($array_num)) ) {
-        
-          sort($array_num);
-          if ( ($array_num[count($array_num)-1] - $array_num[0]) <=4 ) {
-            $this->flg_straight=TRUE;
-            return TRUE;
-          } 
-          
-          //10,J,Q,K,Aのストレートを拾い上げる
-          //Aを14として扱い、最大値と最小値の差が4以下かどうかで判定する
-          if ($array_num[0]===1){
-            $array_num[0]=14;
-            sort($array_num);
-            if ( ($array_num[count($array_num)-1] - $array_num[0]) <=4 ) {
-              $this->flg_straight=TRUE;
-              return TRUE;
-            } 
-          }
-
-        }
+    } 
+    
+    //ジョーカーが3枚以下の場合
+    if( count($array_num) === count(array_unique($array_num)) ) {
+    
+      sort($array_num);
+      if ( ($array_num[count($array_num)-1] - $array_num[0]) <=4 ) {
+        $this->flg_straight=TRUE;
+        return TRUE;
+      } 
+      
+      //10,J,Q,K,Aのストレートを拾い上げる
+      //Aを14として扱い、最大値と最小値の差が4以下かどうかで判定する
+      if ($array_num[0]===1){
+        $array_num[0]=14;
+        sort($array_num);
+        if ( ($array_num[count($array_num)-1] - $array_num[0]) <=4 ) {
+          $this->flg_straight=TRUE;
+          return TRUE;
+        } 
+      }
     }
+
     $this->flg_straight=FALSE;
     return FALSE;
   
