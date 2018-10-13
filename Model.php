@@ -290,21 +290,17 @@ class PokerModel
         $this->flg_flush=false;
         return false;
       }      
-    } else 
-    {
-      if($num_suit===1) 
-      {
-        $this->flg_flush=true;
-        return true;
-      }else 
-      {
-        $this->flg_flush=false;
-        return false;
-      }      
     }
+    //ジョーカーが0枚で、スートが1種類のみでフラッシュ成立
+    if($num_suit===1) 
+    {
+      $this->flg_flush=true;
+      return true;
+    }
+    //フラッシュ不成立   
     $this->flg_flush=false;
     return false;
-
+       
   } 
 
   //ストレートを判定し$flg_straightに真偽値を代入する
