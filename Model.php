@@ -519,9 +519,10 @@ class PokerModel
   //手札を上から5枚表示する
   public function viewHand() 
   {
+    $hands=$this->hand;
     for ($i = 0 ; $i < 5 ; $i++)
     {
-      $num = $this->hand[$i];
+      $num = $hands[$i];
       echo $this->card_property[$num]['index']." ";
     }
     echo PHP_EOL;
