@@ -2,7 +2,8 @@
 
 class PokerModel
 {
-  private $hand = []; //初期手札と交換手札
+  private $hand = []; //手札
+  private $exchange_hand = []; //交換候補
   private $card_property = []; //カードの基本情報(スートや数字、絵柄)
   private $poker_hand_property = []; //上がり役の基本情報(役の名前、得点倍率)
 
@@ -107,35 +108,56 @@ class PokerModel
 
   }
 
-  //初期手札5枚と交換候補5枚の計10枚を生成する
+  //初期手札5枚を生成する
   public function makeHand()
   {
 
-    //全カードからランダムに10枚取り出す
+    //全カードからランダムに5枚取り出す
     $random_array = range(1,count($this->card_property));
     shuffle($random_array);
 
     $this->hand = [];
-    for ($i = 0 ; $i < 10 ; $i++)
+    for ($i = 0 ; $i < 5 ; $i++)
     {
       $this->hand[$i] = $random_array[$i];
     }
 
   }
 
-  //選択した手札を交換手札と入れ替える
+  //交換候補の手札5枚を生成する
+  public function makeExchangeHand()
+  {
+
+    //手札5枚を除いた全カードから5枚取り出す
+    $random_array = range(1,count($this->card_property));
+    $deduplicated_array = [];
+    $deduplicated_array = array_diff( $random_array , $this->hand );
+    shuffle($deduplicated_array);
+
+    $this->exchange_hand = [];
+    for ($i = 0 ; $i < 5 ; $i++)
+    {
+      $this->exchange_hand[$i] = $deduplicated_array[$i];
+    }
+
+  }
+
+  //選択した手札を交換候補の手札と入れ替える
   //1桁目から一番左の手札に対応する
   //2進数で指定する
   public function changeHand(int $chg_flag) 
   {
     
+    //交換候補の手札5枚を生成する
+    $this->makeExchangeHand();
+
     for ($i=0; $i<5 ; $i++) 
     { 
 
-      //一の位が1だった場合、5個先の要素と値を交換する
+      //一の位が1だった場合、交換候補の手札と値を交換する
       if ($chg_flag & 0b1) 
       {
-        list( $this->hand[$i] , $this->hand[$i+5] ) = [ $this->hand[$i+5] , $this->hand[$i] ];
+        list( $this->hand[$i] , $this->exchange_hand[$i] ) = [ $this->exchange_hand[$i] , $this->hand[$i] ];
       }
 
       $chg_flag = $chg_flag>>1; //2進数の値を右に1桁ズラす
@@ -505,8 +527,8 @@ class PokerModel
     $this->hand=[];
     $this->hand=$newHand;
 
-    //念の為10枚になるまで1♠で満たしておく
-    for ($i=count($this->hand); $i<10  ; $i++) 
+    //念の為5枚になるまで1♠で満たしておく
+    for ($i=count($this->hand); $i<5  ; $i++) 
     { 
       array_push($this->hand,1);
     }
