@@ -27,19 +27,20 @@ $poker_model->viewPokerHandNameJa();
 echo PHP_EOL;
 
 //確認用
-$a_num_joker = $poker_model->setNumJoker();
-$b_array_sameRank = $poker_model->setArraySameRank();
-$c_flg_flush = $poker_model->setFlgFlush();
-$d_flg_straight = $poker_model->setFlgStraight();
-$e_royal = $poker_model->isRoyalStraightFlush();
-$f_five = $poker_model->isFiveCard();
-$g_straightflush = $poker_model->isStraightFlush();
-$h_four = $poker_model->isFourOfAKind();
-$i_fullhouse = $poker_model->isFullHouse();
-$j_flush = $poker_model->isFlush();
-$k_straight = $poker_model->isStraight();
-$l_three = $poker_model->isThreeOfAKind();
-$m_two = $poker_model->isTwoPair();
-$n_one = $poker_model->isOnePair();
+$a_num_joker = $pokermodel->setNumJoker();
+$b_array_sameRank = $pokermodel->setArraySameRank();
+$c_flg_flush = $pokermodel->setFlgFlush();
+$d_flg_straight = $pokermodel->setFlgStraight();
+$e_royal = $pokermodel->isRoyalStraightFlush();
+$f_five = $pokermodel->isFiveCard();
+$g_straightflush = $pokermodel->isStraightFlush();
+$h_four = $pokermodel->isFourOfAKind();
+$i_fullhouse = $pokermodel->isFullHouse();
+$j_flush = $pokermodel->isFlush();
+$k_straight = $pokermodel->isStraight();
+$l_three = $pokermodel->isThreeOfAKind();
+$m_two = $pokermodel->isTwoPair();
+$n_one = $pokermodel->isOnePair();
+
 
 echo 'end';
